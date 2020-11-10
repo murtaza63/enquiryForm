@@ -1,3 +1,4 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
 const path = require('path');
 const express = require('express');
 const transporter = require('./config');
@@ -12,14 +13,15 @@ app.use(express.static(buildPath));
 app.post('/send', (req, res) => {
   try {
     const mailOptions = {
-      from: req.body.email, // sender address
-      to: process.env.email, // list of receivers
+      from: process.env.email, // sender address
+      to: req.body.email, // list of receivers
       subject: req.body.subject, // Subject line
       html: req.body.message // plain text body
     };
 
     transporter.sendMail(mailOptions, function(err, info) {
       if (err) {
+        console.log("error:",err)
         res.status(500).send({
           success: false,
           message: 'Something went wrong. Try again later'
